@@ -23,6 +23,7 @@ from rest_framework.exceptions import NotFound
 from django.conf import settings
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+from rest_framework.throttling import UserRateThrottle
 import os
 import logging
 
@@ -32,6 +33,7 @@ log = logging.getLogger(__name__)
 
 @extend_schema(tags=["Product"])
 class CreateProductAPIView(CreateAPIView):
+    throttle_classes = [UserRateThrottle]
     queryset = ProductModel.objects.all()
     serializer_class = CreateProductSerializers
     permission_classes = [IsAuthenticated]
