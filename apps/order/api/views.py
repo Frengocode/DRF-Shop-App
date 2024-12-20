@@ -49,7 +49,7 @@ class GetOrdersAPIView(ListAPIView):
     @extend_schema(responses=BaseOrderSerializer)
     def get_queryset(self):
         return OrderModel.objects.filter(user=self.request.user)
-    
+
     @method_decorator(cache_page(250))
     def list(self, request, *args, **kwargs):
         orders = self.get_queryset()

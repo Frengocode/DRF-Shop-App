@@ -19,7 +19,6 @@ log = logging.getLogger(__name__)
 class CreateCartAPIView(GenericAPIView):
     throttle_classes = [UserRateThrottle]
     permission_classes = [IsAuthenticated]
-    
 
     def post(self, request, *args, **kwargs):
 

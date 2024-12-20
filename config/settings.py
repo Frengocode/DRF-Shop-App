@@ -12,11 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
-from dotenv import load_dotenv
+from .config import validated_config
 import os
-
-
-load_dotenv(dotenv_path=".envs/.env")
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -91,14 +88,13 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("PG_USERNAME"),
-        "PASSWORD": os.getenv("PG_PASSWORD"),
-        "HOST": os.getenv("PG_HOST"),
-        "PORT": os.getenv("PG_PORT"),
+        "NAME": validated_config["DB_NAME"],
+        "USER": validated_config["PG_USERNAME"],
+        "PASSWORD": validated_config["PG_PASSWORD"],
+        "HOST": validated_config["PG_HOST"],
+        "PORT": validated_config["PG_PORT"],
     }
 }
-
 
 
 # Password validation
@@ -158,19 +154,13 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
-
-        'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
     ],
-        'DEFAULT_THROTTLE_RATES': {
-            'anon': '3/min',
-            'user': '5/min'
-        },
-
-        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-            'PAGE_SIZE': 100
-
+    "DEFAULT_THROTTLE_RATES": {"anon": "3/min", "user": "5/min"},
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 100,
 }
 
 

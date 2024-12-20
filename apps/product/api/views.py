@@ -62,7 +62,7 @@ class GetProductsAPIView(ListAPIView):
 class GetProductAPIView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = GetProductSerializers
-    queryset = ProductModel.objects.all() 
+    queryset = ProductModel.objects.all()
 
     @extend_schema(responses=GetProductSerializers)
     @method_decorator(cache_page(300))
@@ -88,13 +88,13 @@ class GetProductByCategoryAPIView(ListAPIView):
         category = self.kwargs.get("product_category")
         products = ProductModel.objects.filter(product_category=category)
         return products
-    
-    
+
     @method_decorator(cache_page(300))
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializers = self.get_serializer(queryset, many=True)
         return Response(serializers.data)
+
 
 @extend_schema(tags=["Product"])
 class DeleteProductAPIView(GenericAPIView):
@@ -142,9 +142,7 @@ class SearchProductAPIView(GenericAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = BaseProductSerializers
 
-    @extend_schema(
-        responses=BaseProductSerializers
-    )
+    @extend_schema(responses=BaseProductSerializers)
     @method_decorator(cache_page(100))
     def get(self, request: HttpRequest, *args, **kwargs):
         search = kwargs.get("search")

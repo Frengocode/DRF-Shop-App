@@ -31,7 +31,6 @@ class GetUserAPIView(RetrieveAPIView):
     def get_queryset(self):
         return get_object_or_404(CustomUser, pk=self.kwargs.get("pk"))
 
-    
     @extend_schema(responses=UserSerializers)
     @method_decorator(cache_page(100))
     def get(self, request, *args, **kwargs):
