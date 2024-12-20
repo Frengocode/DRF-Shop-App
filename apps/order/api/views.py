@@ -10,6 +10,7 @@ from django.db import transaction
 from django.db.models import Sum
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+from rest_framework.throttling import UserRateThrottle
 
 import logging
 
@@ -21,6 +22,7 @@ log = logging.getLogger(__name__)
 class CreateOrderAPIView(CreateAPIView):
     queryset = OrderModel.objects.all()
     permission_classes = [IsAuthenticated]
+    throttle_classes = [UserRateThrottle]
 
     def create(self, request, *args, **kwargs):
         carts = CartModel.objects.filter(

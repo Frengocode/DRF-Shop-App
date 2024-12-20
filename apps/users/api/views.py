@@ -15,7 +15,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
+from rest_framework.throttling import UserRateThrottle
 import logging
+
 
 log = logging.getLogger(__name__)
 
@@ -44,6 +46,7 @@ class GetUserAPIView(RetrieveAPIView):
 
 @extend_schema(tags=["User"])
 class CreateUserAPIView(CreateAPIView):
+    throttle_classes = [UserRateThrottle]
     queryset = CustomUser.objects.all()
     serializer_class = CreateUserSerializer
 
@@ -54,6 +57,7 @@ class CreateUserAPIView(CreateAPIView):
     request=CreateProfilePictureSerializers,
 )
 class CreateProfilePictureAPIView(CreateAPIView):
+    throttle_classes = [UserRateThrottle]
     serializer_class = CreateProfilePictureSerializers
     permission_classes = [IsAuthenticated]
 
