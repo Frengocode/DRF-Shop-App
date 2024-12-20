@@ -24,6 +24,8 @@ from django.conf import settings
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 from rest_framework.throttling import UserRateThrottle
+from .pagination import BaseProductsPagination
+from .exceptions import ProductNotFound
 import os
 import logging
 
@@ -43,6 +45,7 @@ class CreateProductAPIView(CreateAPIView):
 class GetProductsAPIView(ListAPIView):
     serializer_class = GetProductsSerializers
     permission_classes = [IsAuthenticated]
+    pagination_class = BaseProductsPagination
 
     def get_queryset(self):
         return ProductModel.objects.all()
@@ -70,6 +73,8 @@ class GetProductAPIView(RetrieveAPIView):
     def get_object(self):
         pk = self.kwargs.get("pk")
         product = get_object_or_404(ProductModel, pk=pk)
+        if not product:
+            return ProductNotFound()
         return product
 
 
