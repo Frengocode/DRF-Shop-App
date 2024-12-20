@@ -21,8 +21,11 @@ from rest_framework.response import Response
 from rest_framework.request import HttpRequest
 from rest_framework.exceptions import NotFound
 from django.conf import settings
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 import os
 import logging
+
 
 log = logging.getLogger(__name__)
 
@@ -36,15 +39,31 @@ class CreateProductAPIView(CreateAPIView):
 
 @extend_schema(tags=["Product"])
 class GetProductsAPIView(ListAPIView):
-    queryset = ProductModel.objects.all()
     serializer_class = GetProductsSerializers
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return ProductModel.objects.all()
+
+    @extend_schema(responses=GetProductsSerializers)
+    @method_decorator(cache_page(300))
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializers = self.get_serializer(queryset, many=True)
+        return Response(serializers.data)
 
 
 @extend_schema(tags=["Product"])
 class GetProductAPIView(RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = GetProductSerializers
+    queryset = ProductModel.objects.all() 
+
+    @extend_schema(responses=GetProductSerializers)
+    @method_decorator(cache_page(300))
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+        return response
 
     def get_object(self):
         pk = self.kwargs.get("pk")
@@ -57,11 +76,18 @@ class GetProductByCategoryAPIView(ListAPIView):
     serializer_class = GetProductsSerializers
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=GetProductsSerializers)
     def get_queryset(self):
         category = self.kwargs.get("product_category")
         products = ProductModel.objects.filter(product_category=category)
         return products
-
+    
+    
+    @method_decorator(cache_page(300))
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializers = self.get_serializer(queryset, many=True)
+        return Response(serializers.data)
 
 @extend_schema(tags=["Product"])
 class DeleteProductAPIView(GenericAPIView):
@@ -109,6 +135,10 @@ class SearchProductAPIView(GenericAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = BaseProductSerializers
 
+    @extend_schema(
+        responses=BaseProductSerializers
+    )
+    @method_decorator(cache_page(100))
     def get(self, request: HttpRequest, *args, **kwargs):
         search = kwargs.get("search")
         if search is None:
@@ -126,6 +156,7 @@ class GetUserProductsAPIView(GenericAPIView):
     serializer_class = BaseProductSerializers
 
     @extend_schema(responses=BaseProductSerializers)
+    @method_decorator(cache_page(150))
     def get(self, request, *args, **kwargs):
         user_id = kwargs.get("user_id")
         products = ProductModel.objects.filter(user=user_id)

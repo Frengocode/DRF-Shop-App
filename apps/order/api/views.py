@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 from django.db import transaction
 from django.db.models import Sum
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 
 import logging
 
@@ -45,7 +47,8 @@ class GetOrdersAPIView(ListAPIView):
     @extend_schema(responses=BaseOrderSerializer)
     def get_queryset(self):
         return OrderModel.objects.filter(user=self.request.user)
-
+    
+    @method_decorator(cache_page(250))
     def list(self, request, *args, **kwargs):
         orders = self.get_queryset()
 

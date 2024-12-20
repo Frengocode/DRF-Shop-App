@@ -2,9 +2,6 @@ from rest_framework import serializers
 from ..models import Category, ProductModel
 from apps.users.api.serializers import UserSerializers
 
-### SEE ALL SERIALZIERS
-### ListSerializer
-
 
 class BaseProductSerializers(serializers.Serializer):
     id = serializers.IntegerField()

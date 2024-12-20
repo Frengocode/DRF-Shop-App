@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .serializers import BaseCartSerializer
 from rest_framework.exceptions import NotFound
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 import logging
 
 
@@ -50,6 +52,7 @@ class GetCartsAPIView(ListAPIView):
     def get_queryset(self):
         return CartModel.objects.filter(user=self.request.user, is_ready_to_order=False)
 
+    @method_decorator(cache_page(100))
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
 

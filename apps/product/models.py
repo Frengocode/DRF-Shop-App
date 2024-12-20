@@ -20,5 +20,5 @@ class ProductModel(models.Model):
     created_at = models.DateTimeField(default=datetime.utcnow())
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     product_picture = models.ImageField(upload_to="media/product/pictures/")
-    description = models.CharField(max_length=200)
+    description = models.CharField(max_length=1000)
     product_category = models.CharField(choices=Category, max_length=50)

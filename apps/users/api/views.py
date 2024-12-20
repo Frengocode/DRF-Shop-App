@@ -13,6 +13,8 @@ from .serializers import (
 from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 import logging
 
 log = logging.getLogger(__name__)
@@ -27,7 +29,9 @@ class GetUserAPIView(RetrieveAPIView):
     def get_queryset(self):
         return get_object_or_404(CustomUser, pk=self.kwargs.get("pk"))
 
+    
     @extend_schema(responses=UserSerializers)
+    @method_decorator(cache_page(100))
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         if not queryset:
