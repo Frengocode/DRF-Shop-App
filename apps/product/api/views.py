@@ -30,6 +30,7 @@ import os
 import logging
 
 
+
 log = logging.getLogger(__name__)
 
 
@@ -119,6 +120,7 @@ class UpdateProductAPIView(UpdateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UpdateProductSerializers
     queryset = ProductModel.objects.all()
+    throttle_classes = UserRateThrottle
     lookup_field = "pk"
 
     def update(self, request, *args, **kwargs):
